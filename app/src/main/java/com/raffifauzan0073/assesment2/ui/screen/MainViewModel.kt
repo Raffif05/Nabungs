@@ -9,13 +9,13 @@ class MainViewModel : ViewModel() {
             1,
             "Beli nasi",
             15000,
-            "Jajan"
+            "2026-05-14"
         ),
         Transaksi(
             2,
             "Beli galon",
             18000,
-            "Jajan"
+            "2026-05-14"
         )
     )
 }

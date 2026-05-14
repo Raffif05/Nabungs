@@ -4,5 +4,5 @@ data class Transaksi(
     val id: Long,
     val nama: String,
     val nominal: Int,
-    val kategori: String
+    val tanggal: String
 )
