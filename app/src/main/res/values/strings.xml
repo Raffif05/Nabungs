@@ -3,4 +3,5 @@
     <string name="saldo_sisa">Saldo Saat Ini</string>
     <string name="saldo">Rp %1$d</string>
     <string name="list_kosong">Belum ada data</string>
+    <string name="x_diklik">%1$s diklik!</string>
 </resources>
