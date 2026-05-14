@@ -3,6 +3,7 @@ package com.raffifauzan0073.assesment2.ui.screen
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -54,30 +56,42 @@ fun ScreenContent(modifier: Modifier = Modifier) {
     val viewModel: MainViewModel = viewModel()
     val data = viewModel.data
 
-    val saldoAwal = 1000000
+        if (data.isEmpty()) {
 
-    val totalPengeluaran =
-        data.sumOf { it.nominal }
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = stringResource(R.string.list_kosong))
+            }
+        }
+        else {
+            val saldoAwal = 1000000
 
-    val saldo =
-        saldoAwal - totalPengeluaran
+            val totalPengeluaran =
+                data.sumOf { it.nominal }
 
-    Column(
-        modifier = modifier.padding(16.dp)
-    ) {
+            val saldo =
+                saldoAwal - totalPengeluaran
 
-        Text(text = stringResource(R.string.saldo_sisa))
+            Column(
+                modifier = modifier.padding(16.dp)
+            ) {
 
-        Text(
-            text = stringResource(R.string.saldo, saldo),
-            style = MaterialTheme.typography.headlineMedium
-        )
+                Text(text = stringResource(R.string.saldo_sisa))
 
-        LazyColumn{
+                Text(
+                    text = stringResource(R.string.saldo, saldo),
+                    style = MaterialTheme.typography.headlineMedium
+                )
 
-            items(data) {
+            LazyColumn {
 
-                ListItem(it)
+                items(data) {
+
+                    ListItem(it)
+                }
             }
         }
     }
