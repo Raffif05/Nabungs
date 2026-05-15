@@ -6,4 +6,12 @@
     <string name="x_diklik">%1$s diklik!</string>
     <string name="tambah_pengeluaran">Tambah pengeluaran</string>
     <string name="belum_bisa">Belum bisa tambah pengeluaran</string>
+    <string name="nominal">Nominal</string>
+    <string name="tambah_transaksi">Tambah Transaksi</string>
+    <string name="nominal_transaksi">Nominal</string>
+    <string name="kategori_pengeluaran">Kategori Pengeluaran</string>
+    <string name="nama_pengeluaran">Nama Pengeluaran</string>
+    <string name="nama_pemasukan">Nama Pemasukan</string>
+    <string name="kembali">Kembali</string>
+    <string name="simpan">Simpan</string>
 </resources>

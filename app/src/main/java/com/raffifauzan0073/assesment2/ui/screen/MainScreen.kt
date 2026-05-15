@@ -33,15 +33,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.raffifauzan0073.assesment2.R
 import com.raffifauzan0073.assesment2.model.Transaksi
+import com.raffifauzan0073.assesment2.navigation.Screen
 import com.raffifauzan0073.assesment2.ui.theme.Assesment2Theme
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
-    val context = LocalContext.current
+fun MainScreen(navController: NavHostController) {
 
     Scaffold(
         topBar = {
@@ -58,7 +60,7 @@ fun MainScreen() {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    Toast.makeText(context, R.string.belum_bisa, Toast.LENGTH_SHORT).show()
+                    navController.navigate(Screen.FormBaru.route)
                 }
             ) {
                 Icon(
@@ -80,35 +82,34 @@ fun ScreenContent(modifier: Modifier = Modifier) {
     val data = viewModel.data
     val context = LocalContext.current
 
-        if (data.isEmpty()) {
+    if (data.isEmpty()) {
 
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = stringResource(R.string.list_kosong))
-            }
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = stringResource(R.string.list_kosong))
         }
-        else {
-            val saldoAwal = 1000000
+    } else {
+        val saldoAwal = 1000000
 
-            val totalPengeluaran =
-                data.sumOf { it.nominal }
+        val totalPengeluaran =
+            data.sumOf { it.nominal }
 
-            val saldo =
-                saldoAwal - totalPengeluaran
+        val saldo =
+            saldoAwal - totalPengeluaran
 
-            Column(
-                modifier = modifier.padding(16.dp)
-            ) {
+        Column(
+            modifier = modifier.padding(16.dp)
+        ) {
 
-                Text(text = stringResource(R.string.saldo_sisa))
+            Text(text = stringResource(R.string.saldo_sisa))
 
-                Text(
-                    text = stringResource(R.string.saldo, saldo),
-                    style = MaterialTheme.typography.headlineMedium
-                )
+            Text(
+                text = stringResource(R.string.saldo, saldo),
+                style = MaterialTheme.typography.headlineMedium
+            )
 
             LazyColumn(
                 contentPadding = PaddingValues(bottom = 84.dp)
@@ -122,7 +123,6 @@ fun ScreenContent(modifier: Modifier = Modifier) {
             }
         }
     }
-
 }
 
 @Composable
@@ -160,6 +160,6 @@ fun ListItem(transaksi: Transaksi, onClick: () -> Unit) {
 @Composable
 fun MainScreenPreview() {
     Assesment2Theme {
-        MainScreen()
+        MainScreen(rememberNavController())
     }
 }
