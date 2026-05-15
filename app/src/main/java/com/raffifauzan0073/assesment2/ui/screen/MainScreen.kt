@@ -1,7 +1,6 @@
 package com.raffifauzan0073.assesment2.ui.screen
 
 import android.content.res.Configuration
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +15,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -25,7 +25,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,7 +38,6 @@ import com.raffifauzan0073.assesment2.R
 import com.raffifauzan0073.assesment2.model.Transaksi
 import com.raffifauzan0073.assesment2.navigation.Screen
 import com.raffifauzan0073.assesment2.ui.theme.Assesment2Theme
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,6 +55,7 @@ fun MainScreen(navController: NavHostController) {
                 )
             )
         },
+
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -70,55 +69,77 @@ fun MainScreen(navController: NavHostController) {
                 )
             }
         }
-    ) { innerPadding ->
-        ScreenContent(Modifier.padding(innerPadding))
 
+    ) { innerPadding ->
+        ScreenContent(modifier = Modifier.padding(innerPadding), navController = navController)
     }
 }
 
 @Composable
-fun ScreenContent(modifier: Modifier = Modifier) {
+fun ScreenContent(modifier: Modifier = Modifier, navController: NavHostController) {
     val viewModel: MainViewModel = viewModel()
     val data = viewModel.data
-    val context = LocalContext.current
 
     if (data.isEmpty()) {
-
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = stringResource(R.string.list_kosong))
         }
     } else {
-        val saldoAwal = 1000000
+        val totalPemasukan = data.filter { it.jenis == "Pemasukan" }.sumOf { it.nominal }
 
-        val totalPengeluaran =
-            data.sumOf { it.nominal }
+        val totalPengeluaran = data.filter { it.jenis == "Pengeluaran" }.sumOf { it.nominal }
 
-        val saldo =
-            saldoAwal - totalPengeluaran
+        val saldo = totalPemasukan - totalPengeluaran
+
+        val saldoAwal = data.firstOrNull { it.nama == "Saldo Awal" && it.jenis == "Pemasukan" }
+
+        val transaksiList = data.filter { it.nama != "Saldo Awal" }
 
         Column(
             modifier = modifier.padding(16.dp)
         ) {
 
-            Text(text = stringResource(R.string.saldo_sisa))
+            Card(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp).clickable {
+                        saldoAwal?.let {
+                            navController.navigate(Screen.FormUbah.withId(it.id))
+                        }
+                    }
+            ) {
+
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(text = stringResource(R.string.saldo_sisa))
+
+                    Text(
+                        text = stringResource(R.string.saldo, saldo),
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                }
+            }
 
             Text(
-                text = stringResource(R.string.saldo, saldo),
-                style = MaterialTheme.typography.headlineMedium
+                text = stringResource(R.string.riwayat_transaksi),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 12.dp, bottom = 1.dp)
             )
+
 
             LazyColumn(
                 contentPadding = PaddingValues(bottom = 84.dp)
             ) {
-                items(data) {
-                    val pesan = stringResource(R.string.x_diklik, it.nama)
+                items(transaksiList) {
                     ListItem(it) {
-                        Toast.makeText(context, pesan, Toast.LENGTH_SHORT).show()
+                        navController.navigate(Screen.FormUbah.withId(it.id))
                     }
+                    HorizontalDivider()
                 }
             }
         }
@@ -128,30 +149,27 @@ fun ScreenContent(modifier: Modifier = Modifier) {
 @Composable
 fun ListItem(transaksi: Transaksi, onClick: () -> Unit) {
 
-    Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp).clickable{ onClick() }
+    Column(
+        modifier = Modifier.fillMaxWidth().clickable { onClick() }.padding(vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            Text(
-                text = "Rp ${transaksi.nominal}",
-                fontSize = 20.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                fontWeight = FontWeight.Bold
+        Text(
+            text = "Rp ${transaksi.nominal}",
+            fontSize = 20.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = transaksi.nama,
+            style = MaterialTheme.typography.titleMedium,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
 
-            )
-            Text(
-                text = transaksi.nama,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-
-            )
-            Text(text = transaksi.tanggal)
-        }
+        Text(
+            text = transaksi.tanggal
+        )
     }
 }
 

@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -35,11 +36,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.raffifauzan0073.assesment2.R
@@ -47,7 +50,9 @@ import com.raffifauzan0073.assesment2.ui.theme.Assesment2Theme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailScreen(navController: NavHostController) {
+fun DetailScreen(navController: NavHostController, id: Long? = null) {
+    val viewModel: MainViewModel = viewModel()
+
     var nama by remember { mutableStateOf("") }
     var nominal by remember { mutableStateOf("") }
     var kategori by remember { mutableStateOf("") }
@@ -55,6 +60,22 @@ fun DetailScreen(navController: NavHostController) {
 
     val options = listOf("Pengeluaran", "Pemasukan")
     val jenis = options[selectedIndex]
+    val isEdit = id != null
+
+    LaunchedEffect(Unit) {
+        if (id == null) return@LaunchedEffect
+        val data = viewModel.getTransaksi(id) ?: return@LaunchedEffect
+        nama = data.nama
+        nominal = data.nominal.toString()
+        kategori = data.kategori
+
+        selectedIndex =
+            if (data.jenis == "Pengeluaran") {
+                0
+            } else {
+                1
+            }
+    }
 
     Scaffold(
         topBar = {
@@ -69,7 +90,13 @@ fun DetailScreen(navController: NavHostController) {
                     }
                 },
                 title = {
-                    Text(text = stringResource(R.string.tambah_transaksi))
+                    Text(
+                        text = if (isEdit) {
+                            stringResource(R.string.edit_transaksi)
+                        } else {
+                            stringResource(R.string.tambah_transaksi)
+                        }
+                    )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -79,7 +106,7 @@ fun DetailScreen(navController: NavHostController) {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.Outlined.Check,
-                            contentDescription =stringResource(R.string.simpan),
+                            contentDescription = stringResource(R.string.simpan),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -95,9 +122,13 @@ fun DetailScreen(navController: NavHostController) {
             kategori = kategori,
             onKategoriChange = { kategori = it },
             selectedIndex = selectedIndex,
-            onSelectedIndexChange = { selectedIndex = it },
+            onSelectedIndexChange = {
+                selectedIndex = it
+                kategori = ""
+            },
             options = options,
             jenis = jenis,
+            isEdit = isEdit,
             modifier = Modifier.padding(padding)
         )
     }
@@ -112,6 +143,7 @@ fun FormTransaksi(
     selectedIndex: Int, onSelectedIndexChange: (Int) -> Unit,
     options: List<String>,
     jenis: String,
+    isEdit: Boolean,
     modifier: Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -134,24 +166,32 @@ fun FormTransaksi(
         modifier = modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        SingleChoiceSegmentedButtonRow(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            options.forEachIndexed { index, label ->
-                SegmentedButton(
-                    shape = SegmentedButtonDefaults.itemShape(
-                        index = index,
-                        count = options.size
-                    ),
-                    onClick = {
-                        onSelectedIndexChange(index)
-                    },
-                    selected = index == selectedIndex,
-                    label = {
-                        Text(text = label)
-                    }
-                )
+        if (!isEdit) {
+            SingleChoiceSegmentedButtonRow(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                options.forEachIndexed { index, label ->
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(
+                            index = index,
+                            count = options.size
+                        ),
+                        onClick = {
+                            onSelectedIndexChange(index)
+                        },
+                        selected = index == selectedIndex,
+                        label = {
+                            Text(text = label)
+                        }
+                    )
+                }
             }
+        } else {
+            Text(
+                text = jenis,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
         }
 
         OutlinedTextField(

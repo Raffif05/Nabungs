@@ -9,13 +9,36 @@ class MainViewModel : ViewModel() {
             1,
             "Beli nasi",
             15000,
-            "2026-05-14"
+            "2026-05-15",
+            "Makan",
+            "Pengeluaran"
         ),
         Transaksi(
             2,
             "Beli galon",
-            18000,
-            "2026-05-14"
+            13000,
+            "2026-05-15",
+            "Makan",
+            "Pengeluaran"
+        ),
+        Transaksi(
+            3,
+            "Beli internet",
+            20000,
+            "2026-05-13",
+            "Tagihan",
+            "Pengeluaran"
+        ),
+        Transaksi(
+            4,
+            "Saldo Awal",
+            1000000,
+            "2026-05-15",
+            "",
+            "Pemasukan"
         )
     )
+    fun getTransaksi(id: Long): Transaksi? {
+        return data.find { it.id == id }
+    }
 }
