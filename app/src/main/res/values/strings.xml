@@ -4,4 +4,6 @@
     <string name="saldo">Rp %1$d</string>
     <string name="list_kosong">Belum ada data</string>
     <string name="x_diklik">%1$s diklik!</string>
+    <string name="tambah_pengeluaran">Tambah pengeluaran</string>
+    <string name="belum_bisa">Belum bisa tambah pengeluaran</string>
 </resources>
