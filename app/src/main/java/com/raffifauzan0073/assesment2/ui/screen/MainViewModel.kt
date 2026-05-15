@@ -1,44 +1,21 @@
 package com.raffifauzan0073.assesment2.ui.screen
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.raffifauzan0073.assesment2.database.TransaksiDao
 import com.raffifauzan0073.assesment2.model.Transaksi
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 
-class MainViewModel : ViewModel() {
-    val data = listOf(
-        Transaksi(
-            1,
-            "Beli nasi",
-            15000,
-            "2026-05-15",
-            "Makan",
-            "Pengeluaran"
-        ),
-        Transaksi(
-            2,
-            "Beli galon",
-            13000,
-            "2026-05-15",
-            "Makan",
-            "Pengeluaran"
-        ),
-        Transaksi(
-            3,
-            "Beli internet",
-            20000,
-            "2026-05-13",
-            "Tagihan",
-            "Pengeluaran"
-        ),
-        Transaksi(
-            4,
-            "Saldo Awal",
-            1000000,
-            "2026-05-15",
-            "",
-            "Pemasukan"
-        )
+class MainViewModel(dao: TransaksiDao) : ViewModel() {
+    val data: StateFlow<List<Transaksi>> = dao.getTransaksi().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = emptyList()
     )
+
     fun getTransaksi(id: Long): Transaksi? {
-        return data.find { it.id == id }
+        return data.value.find { it.id == id }
     }
 }
