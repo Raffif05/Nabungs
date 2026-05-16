@@ -64,6 +64,7 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
     var nominal by remember { mutableStateOf("") }
     var kategori by remember { mutableStateOf("") }
     var selectedIndex by remember { mutableIntStateOf(0) }
+    var showDialog by remember { mutableStateOf(false) }
 
     val options = listOf("Pengeluaran", "Pemasukan")
     val jenis = options[selectedIndex]
@@ -131,8 +132,7 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
                     }
                     if (id != null) {
                         DeleteAction {
-                            viewModel.delete(id)
-                            navController.popBackStack()
+                            showDialog = true
                         }
                     }
                 }
@@ -156,12 +156,21 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
             isEdit = isEdit,
             modifier = Modifier.padding(padding)
         )
+        if (id != null && showDialog) {
+            DisplayAlertDialog(
+                onDismissRequest = { showDialog = false }) {
+                showDialog = false
+                viewModel.delete(id)
+                navController.popBackStack()
+            }
+        }
     }
 }
 
 @Composable
 fun DeleteAction(delete: () -> Unit) {
-    var expanded by remember{ mutableStateOf(false) }
+    var expanded by remember {
+        mutableStateOf(false) }
     IconButton(onClick = { expanded = true }) {
         Icon(
             imageVector = Icons.Filled.MoreVert,
