@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "transaksi")
 data class Transaksi(
     @PrimaryKey(autoGenerate = true)
-    val id: Long,
+    val id: Long = 0L,
     val nama: String,
     val nominal: Int,
     val tanggal: String,

@@ -101,8 +101,6 @@ fun ScreenContent(modifier: Modifier = Modifier, navController: NavHostControlle
 
         val saldo = totalPemasukan - totalPengeluaran
 
-        val saldoAwal = data.firstOrNull { it.nama == "Saldo Awal" && it.jenis == "Pemasukan" }
-
         val transaksiList = data.filter { it.nama != "Saldo Awal" }
 
         Column(
@@ -110,11 +108,9 @@ fun ScreenContent(modifier: Modifier = Modifier, navController: NavHostControlle
         ) {
 
             Card(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp).clickable {
-                        saldoAwal?.let {
-                            navController.navigate(Screen.FormUbah.withId(it.id))
-                        }
-                    }
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
             ) {
 
                 Column(
@@ -160,7 +156,11 @@ fun ListItem(transaksi: Transaksi, onClick: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Text(
-            text = "Rp ${transaksi.nominal}",
+            text = if (transaksi.jenis == "Pemasukan") {
+                "+ Rp ${transaksi.nominal}"
+            } else {
+                "- Rp ${transaksi.nominal}"
+            },
             fontSize = 20.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -174,7 +174,14 @@ fun ListItem(transaksi: Transaksi, onClick: () -> Unit) {
         )
 
         Text(
-            text = transaksi.tanggal
+            text =
+                if (transaksi.jenis == "Pengeluaran") {
+                    "${transaksi.kategori} • ${transaksi.tanggal}"
+                } else {
+                    transaksi.tanggal
+                },
+
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }

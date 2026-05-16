@@ -17,4 +17,7 @@ interface TransaksiDao {
 
     @Query("SELECT * FROM transaksi ORDER BY tanggal DESC")
     fun getTransaksi(): Flow<List<Transaksi>>
+
+    @Query("SELECT * FROM transaksi WHERE id = :id")
+    suspend fun getTransaksiById(id: Long): Transaksi?
 }

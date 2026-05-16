@@ -15,7 +15,4 @@ class MainViewModel(dao: TransaksiDao) : ViewModel() {
         initialValue = emptyList()
     )
 
-    fun getTransaksi(id: Long): Transaksi? {
-        return data.value.find { it.id == id }
-    }
 }
