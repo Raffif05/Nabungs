@@ -20,4 +20,7 @@ interface TransaksiDao {
 
     @Query("SELECT * FROM transaksi WHERE id = :id")
     suspend fun getTransaksiById(id: Long): Transaksi?
+
+    @Query("DELETE FROM transaksi WHERE id = :id")
+    suspend fun deleteById(id: Long)
 }

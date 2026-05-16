@@ -17,4 +17,6 @@
     <string name="edit_transaksi">Ubah_transaksi</string>
     <string name="riwayat_transaksi">Riwayat transaksi</string>
     <string name="invalid">Data tidak boleh kosong</string>
+    <string name="lainnya">Opsi lainnya</string>
+    <string name="hapus">Hapus transaksi</string>
 </resources>
