@@ -64,7 +64,7 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
     var nominal by remember { mutableStateOf("") }
     var kategori by remember { mutableStateOf("") }
     var selectedIndex by remember { mutableIntStateOf(0) }
-    var showDialog by remember { mutableStateOf(false) }
+    val showDialog = remember { mutableStateOf(false) }
 
     val options = listOf("Pengeluaran", "Pemasukan")
     val jenis = options[selectedIndex]
@@ -132,7 +132,7 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
                     }
                     if (id != null) {
                         DeleteAction {
-                            showDialog = true
+                            showDialog.value = true
                         }
                     }
                 }
@@ -156,10 +156,13 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
             isEdit = isEdit,
             modifier = Modifier.padding(padding)
         )
-        if (id != null && showDialog) {
+        if (id != null && showDialog.value) {
             DisplayAlertDialog(
-                onDismissRequest = { showDialog = false }) {
-                showDialog = false
+                onDismissRequest = {
+                    showDialog.value = false
+                }
+            ) {
+                showDialog.value = false
                 viewModel.delete(id)
                 navController.popBackStack()
             }
@@ -169,24 +172,23 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
 
 @Composable
 fun DeleteAction(delete: () -> Unit) {
-    var expanded by remember {
-        mutableStateOf(false) }
-    IconButton(onClick = { expanded = true }) {
+    val expanded = remember { mutableStateOf(false) }
+    IconButton(onClick = { expanded.value = true }) {
         Icon(
             imageVector = Icons.Filled.MoreVert,
             contentDescription = stringResource(R.string.lainnya),
             tint = MaterialTheme.colorScheme.primary
         )
         DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
+            expanded = expanded.value,
+            onDismissRequest = { expanded.value = false }
         ) {
             DropdownMenuItem(
                 text = {
                     Text(text = stringResource(R.string.hapus))
                 },
                 onClick = {
-                    expanded = false
+                    expanded.value = false
                     delete()
                 }
             )

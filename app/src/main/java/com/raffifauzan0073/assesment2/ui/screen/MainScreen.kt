@@ -1,6 +1,7 @@
 package com.raffifauzan0073.assesment2.ui.screen
 
 import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,9 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -47,6 +52,7 @@ import com.raffifauzan0073.assesment2.model.Transaksi
 import com.raffifauzan0073.assesment2.navigation.Screen
 import com.raffifauzan0073.assesment2.ui.theme.Assesment2Theme
 import com.raffifauzan0073.assesment2.util.ViewModelFactory
+import androidx.compose.foundation.lazy.staggeredgrid.items
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,12 +101,12 @@ fun MainScreen(navController: NavHostController) {
         }
 
     ) { innerPadding ->
-        ScreenContent(modifier = Modifier.padding(innerPadding), navController = navController)
+        ScreenContent(showList, modifier = Modifier.padding(innerPadding), navController = navController)
     }
 }
 
 @Composable
-fun ScreenContent(modifier: Modifier = Modifier, navController: NavHostController) {
+fun ScreenContent(showList: Boolean, modifier: Modifier = Modifier, navController: NavHostController) {
     val context = LocalContext.current
     val factory = ViewModelFactory(context)
     val viewModel: MainViewModel = viewModel(factory = factory)
@@ -153,15 +159,33 @@ fun ScreenContent(modifier: Modifier = Modifier, navController: NavHostControlle
                 modifier = Modifier.padding(top = 12.dp, bottom = 1.dp)
             )
 
+            if (showList) {
 
-            LazyColumn(
-                contentPadding = PaddingValues(bottom = 84.dp)
-            ) {
-                items(transaksiList) {
-                    ListItem(it) {
-                        navController.navigate(Screen.FormUbah.withId(it.id))
+                LazyColumn(
+                    contentPadding = PaddingValues(bottom = 84.dp)
+                ) {
+                    items(transaksiList) {
+                        ListItem(it) {
+                            navController.navigate(Screen.FormUbah.withId(it.id))
+                        }
+                        HorizontalDivider()
                     }
-                    HorizontalDivider()
+                }
+
+            } else {
+
+                LazyVerticalStaggeredGrid(
+                    modifier = Modifier.fillMaxSize(),
+                    columns = StaggeredGridCells.Fixed(2),
+                    verticalItemSpacing = 8.dp,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(8.dp, 8.dp, 8.dp, 84.dp)
+                ) {
+                    items(transaksiList) {
+                        GridItem(transaksi = it) {
+                            navController.navigate(Screen.FormUbah.withId(it.id))
+                        }
+                    }
                 }
             }
         }
@@ -205,6 +229,52 @@ fun ListItem(transaksi: Transaksi, onClick: () -> Unit) {
         )
     }
 }
+
+@Composable
+fun GridItem(transaksi: Transaksi, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        border = BorderStroke(1.dp, DividerDefaults.color)
+    ) {
+        Column(
+            modifier = Modifier.padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                text = if (transaksi.jenis == "Pemasukan") {
+                    "+ Rp ${transaksi.nominal}"
+                } else {
+                    "- Rp ${transaksi.nominal}"
+                },
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            )
+
+            Text(
+                text = transaksi.nama,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Text(
+                text = if (transaksi.jenis == "Pengeluaran") {
+                    "${transaksi.kategori} • ${transaksi.tanggal}"
+                } else {
+                    transaksi.tanggal
+                },
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+
 
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
